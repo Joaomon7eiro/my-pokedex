@@ -3,12 +3,13 @@ import { format, parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 
 import { Link } from 'react-router-dom';
-import { FaSpinner } from 'react-icons/fa';
 
 import api from '../../services/myPokedexApi';
 
 import { PokemonList, Container } from './styles';
 import icon from '../../assets/logo.png';
+
+import Loading from '../../components/Loading';
 
 export default class MyPokedex extends Component {
   constructor(props) {
@@ -55,35 +56,41 @@ export default class MyPokedex extends Component {
 
     if (loading) {
       return (
-        <div>
-          <FaSpinner size={24} color="#222" />
-        </div>
+        <Container>
+          <Loading />
+        </Container>
       );
     }
     return (
       <Container>
-        <PokemonList>
-          {pokemons.map(pokemon => {
-            return (
-              <li key={pokemon.id}>
-                <img src={pokemon.image} alt="pokemon" />
-                <strong>
-                  <span>#{pokemon.id}</span> {pokemon.name}
-                </strong>
-                <strong>
-                  Data da Captura: <span>{pokemon.capture_date}</span>
-                </strong>
+        {pokemons.length > 0 ? (
+          <PokemonList>
+            {pokemons.map(pokemon => {
+              return (
+                <li key={pokemon.id}>
+                  <img src={pokemon.image} alt="pokemon" />
+                  <strong>
+                    <span>#{pokemon.id}</span> {pokemon.name}
+                  </strong>
+                  <strong>
+                    Data da Captura: <span>{pokemon.capture_date}</span>
+                  </strong>
 
-                <Link to={`/my-pokedex/${pokemon.id}`}>
-                  <div>
-                    <img src={icon} alt="capturar" />
-                  </div>
-                  <span>Ver Detalhes</span>
-                </Link>
-              </li>
-            );
-          })}
-        </PokemonList>
+                  <Link to={`/my-pokedex/${pokemon.id}`}>
+                    <div>
+                      <img src={icon} alt="capturar" />
+                    </div>
+                    <span>Ver Detalhes</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </PokemonList>
+        ) : (
+          <div>
+            <h3>Você ainda não possui pokémons</h3>
+          </div>
+        )}
       </Container>
     );
   }

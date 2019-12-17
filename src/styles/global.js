@@ -14,7 +14,10 @@ export default createGlobalStyle`
     max-width: 1020px;
     min-width: 550px;
     margin: 0 auto;
-    padding: 0 20px 50px;
+  }
+
+  html, body, #root{
+    height: 100%;
   }
 
   body {

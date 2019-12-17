@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { FaSpinner } from 'react-icons/fa';
 import { format, parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 
@@ -16,6 +15,8 @@ import {
 } from './styles';
 
 import api from '../../services/myPokedexApi';
+
+import Loading from '../../components/Loading';
 
 export default class Pokemon extends Component {
   constructor(props) {
@@ -38,7 +39,15 @@ export default class Pokemon extends Component {
 
     this.setState({ loading: true });
 
-    const response = await api.get(`/pokemons/${id}/`);
+    let response;
+    try {
+      response = await api.get(`/pokemons/${id}/`);
+    } catch (error) {
+      this.setState({
+        loading: false,
+      });
+      return;
+    }
 
     const { pokemon } = response.data;
 
@@ -73,7 +82,11 @@ export default class Pokemon extends Component {
     const { pokemon, loading, types, moves } = this.state;
 
     if (loading) {
-      return <FaSpinner />;
+      return (
+        <Container>
+          <Loading />
+        </Container>
+      );
     }
     return (
       <>

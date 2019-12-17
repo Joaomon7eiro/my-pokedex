@@ -1,5 +1,5 @@
+/* eslint-disable no-nested-ternary */
 import React, { Component } from 'react';
-import { FaSpinner } from 'react-icons/fa';
 
 import {
   Container,
@@ -134,14 +134,15 @@ export default class Pokemon extends Component {
         api.post(`/pokemons/${pokemon.id}/types`, { types: pokemonTypes }),
       ]);
     } catch (error) {
-      return this.setState({ capLoading: false, captured: false });
+      this.setState({ capLoading: false, captured: false });
+      return;
     }
 
     this.setState({ capLoading: false, captured: true });
   };
 
   render() {
-    const { pokemon, loading, types, moves, captured } = this.state;
+    const { pokemon, loading, types, moves, captured, capLoading } = this.state;
 
     if (loading) {
       return (
@@ -192,6 +193,10 @@ export default class Pokemon extends Component {
             </ContainerDetails>
             {captured ? (
               <Button disabled>Já obtido</Button>
+            ) : capLoading ? (
+              <Button>
+                <Loading />
+              </Button>
             ) : (
               <Button onClick={this.registerCapture}>Registrar Captura</Button>
             )}
