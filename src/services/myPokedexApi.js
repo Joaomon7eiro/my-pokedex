@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://my-pokedex-api.herokuapp.com',
+  baseURL: 'https://my-pokedex-api.herokuapp.com',
   // baseURL: 'http://localhost:5000',
 });
 
