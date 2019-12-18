@@ -1,9 +1,13 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Form, Input } from '@rocketseat/unform';
 import * as Yup from 'yup';
 
+import { loginRequest } from '../../store/modules/auth/actions';
+
 import logo from '../../assets/logo.png';
+import Loading from '../../components/Loading';
 
 const schema = Yup.object().shape({
   email: Yup.string()
@@ -13,8 +17,11 @@ const schema = Yup.object().shape({
 });
 
 export default function Login() {
+  const dispatch = useDispatch();
+  const loading = useSelector(state => state.auth.loading);
+
   function handleSubmit({ email, password }) {
-    console.log({ email, password });
+    dispatch(loginRequest(email, password));
   }
 
   return (
@@ -25,7 +32,7 @@ export default function Login() {
         <Input name="email" type="email" placeholder="Email" />
         <Input name="password" type="password" placeholder="Senha" />
 
-        <button type="submit">Entrar</button>
+        <button type="submit">{loading ? <Loading /> : 'Entrar'} </button>
         <Link to="/register">Quero ser um Treinador</Link>
       </Form>
     </>

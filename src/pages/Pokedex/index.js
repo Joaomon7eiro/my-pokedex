@@ -1,3 +1,5 @@
+/* eslint-disable no-nested-ternary */
+
 import React, { Component } from 'react';
 import { format, parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
@@ -6,7 +8,7 @@ import { Link } from 'react-router-dom';
 
 import api from '../../services/myPokedexApi';
 
-import { PokemonList, Container } from './styles';
+import { PokemonList, Container, LoadButton } from './styles';
 import icon from '../../assets/logo.png';
 
 import Loading from '../../components/Loading';
@@ -18,6 +20,8 @@ export default class MyPokedex extends Component {
     this.state = {
       pokemons: [],
       loading: false,
+      currentPage: 0,
+      totalPages: 0,
     };
   }
 
@@ -25,15 +29,22 @@ export default class MyPokedex extends Component {
     this.loadPokemons();
   }
 
-  loadMorePokemons = () => {
-    this.loadPokemons();
+  loadMorePokemons = page => {
+    this.loadPokemons(page);
   };
 
-  loadPokemons = async () => {
-    this.setState({ loading: true });
-    const response = await api.get('/pokemons');
+  loadPokemons = async (page = 1) => {
+    const { pokemons } = this.state;
 
-    const pokemonsData = response.data.data.map(pokemon => {
+    this.setState({ loading: true });
+    const response = await api.get('/pokemons', {
+      params: {
+        page,
+      },
+    });
+
+    const pokemonsData = response.data.data.map(data => {
+      const { pokemon } = data;
       const date = parseISO(pokemon.capture_date);
       const formattedDate = format(
         date,
@@ -48,21 +59,27 @@ export default class MyPokedex extends Component {
         capture_date: formattedDate,
       };
     });
-    this.setState({ pokemons: pokemonsData, loading: false });
+
+    this.setState({
+      pokemons: [...pokemons, ...pokemonsData],
+      loading: false,
+      currentPage: response.data.currentPage,
+      totalPages: response.data.totalPages,
+    });
   };
 
   render() {
-    const { pokemons, loading } = this.state;
+    const { pokemons, loading, currentPage, totalPages } = this.state;
 
-    if (loading) {
-      return (
-        <Container>
-          <Loading />
-        </Container>
-      );
-    }
     return (
       <Container>
+        {loading ? (
+          <Container>
+            <Loading />
+          </Container>
+        ) : (
+          <></>
+        )}
         {pokemons.length > 0 ? (
           <PokemonList>
             {pokemons.map(pokemon => {
@@ -86,10 +103,21 @@ export default class MyPokedex extends Component {
               );
             })}
           </PokemonList>
-        ) : (
+        ) : !loading ? (
           <div>
             <h3>Você ainda não possui pokémons</h3>
           </div>
+        ) : null}
+
+        {currentPage < totalPages ? (
+          <LoadButton
+            type="button"
+            onClick={() => this.loadMorePokemons(currentPage + 1)}
+          >
+            Carregar mais Pokémons
+          </LoadButton>
+        ) : (
+          <></>
         )}
       </Container>
     );

@@ -1,5 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, { Component } from 'react';
+import typeColors from '../../util/typeColors';
 
 import {
   Container,
@@ -11,6 +12,7 @@ import {
   ContainerDetails,
   Card,
   CardMove,
+  TypeLi,
 } from './styles';
 
 import Loading from '../../components/Loading';
@@ -18,7 +20,7 @@ import Loading from '../../components/Loading';
 import { pokeApi } from '../../services/pokeApi';
 import api from '../../services/myPokedexApi';
 
-export default class Pokemon extends Component {
+class Pokemon extends Component {
   constructor(props) {
     super(props);
 
@@ -57,7 +59,13 @@ export default class Pokemon extends Component {
 
     this.setState({ loading: true });
 
-    const response = await pokeApi.get(`/pokemon/${id}/`);
+    let response;
+    try {
+      response = await pokeApi.get(`/pokemon/${id}/`);
+    } catch (error) {
+      this.setState({ loading: false });
+      return;
+    }
 
     const pokemon = {
       id: response.data.id,
@@ -123,7 +131,9 @@ export default class Pokemon extends Component {
       ...pokemon,
       capture_date: new Date().toISOString(),
     };
-
+    const data = JSON.parse(localStorage.getItem('persist:myPokedex'));
+    const user = JSON.parse(data.user);
+    const userId = user.user.id;
     try {
       await Promise.all([
         api.post('/pokemons', pokemonWithDate),
@@ -132,6 +142,9 @@ export default class Pokemon extends Component {
       await Promise.all([
         api.post(`/pokemons/${pokemon.id}/moves`, { moves: pokemonMoves }),
         api.post(`/pokemons/${pokemon.id}/types`, { types: pokemonTypes }),
+        api.post(`/users/${userId}/pokemons`, {
+          pokemonId: pokemon.id,
+        }),
       ]);
     } catch (error) {
       this.setState({ capLoading: false, captured: false });
@@ -183,9 +196,9 @@ export default class Pokemon extends Component {
                 <TypesList>
                   {types.map(type => {
                     return (
-                      <li key={type.id}>
+                      <TypeLi color={typeColors(type.id)} key={type.id}>
                         <span>{type.name}</span>
-                      </li>
+                      </TypeLi>
                     );
                   })}
                 </TypesList>
@@ -218,3 +231,5 @@ export default class Pokemon extends Component {
     );
   }
 }
+
+export default Pokemon;

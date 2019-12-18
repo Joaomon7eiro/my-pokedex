@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { format, parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
+import typeColors from '../../util/typeColors';
 
 import {
   Container,
@@ -8,9 +9,10 @@ import {
   Details,
   TypesList,
   MovesList,
-  Button,
+  Span,
   ContainerDetails,
   Card,
+  TypeLi,
   CardMove,
 } from './styles';
 
@@ -49,7 +51,7 @@ export default class Pokemon extends Component {
       return;
     }
 
-    const { pokemon } = response.data;
+    const { pokemon } = response.data.pokemon;
 
     pokemon.capture_date = this.formatDate(pokemon.capture_date);
 
@@ -118,18 +120,21 @@ export default class Pokemon extends Component {
               <Card>
                 <h2>Tipo</h2>
                 <TypesList>
-                  {types.map(({ type }) => {
+                  {types.map(data => {
                     return (
-                      <li key={type.name}>
-                        <span>{type.name}</span>
-                      </li>
+                      <TypeLi
+                        color={typeColors(data.type_id)}
+                        key={data.type_id}
+                      >
+                        <span>{data.type.name}</span>
+                      </TypeLi>
                     );
                   })}
                 </TypesList>
               </Card>
             </ContainerDetails>
 
-            <Button>Data de Captura: {pokemon.capture_date}</Button>
+            <Span disabled>Data de Captura: {pokemon.capture_date}</Span>
           </Details>
         </Container>
         <CardMove>

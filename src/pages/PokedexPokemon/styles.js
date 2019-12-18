@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
@@ -86,13 +86,6 @@ export const TypesList = styled.ul`
   color: #fff;
   list-style: none;
   padding: 10px;
-
-  li {
-    background: #369143;
-    padding: 10px;
-    border-radius: 6px;
-    margin: 5px;
-  }
 `;
 
 export const MovesList = styled.ul`
@@ -118,7 +111,7 @@ export const ContainerDetails = styled.div`
   justify-content: space-between;
 `;
 
-export const Button = styled.button`
+export const Span = styled.span`
   padding: 10px;
   background: #da471b;
   border: 0;
@@ -126,4 +119,16 @@ export const Button = styled.button`
   border-radius: 4px;
   margin-top: 10px;
   font-weight: bold;
+  text-align: center;
+`;
+
+const myCSS = css`
+  background: ${({ color }) => color};
+  padding: 10px;
+  border-radius: 6px;
+  margin: 5px;
+`;
+
+export const TypeLi = styled.li`
+  ${myCSS};
 `;
